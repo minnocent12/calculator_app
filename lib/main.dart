@@ -10,13 +10,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: ' Calculator App',
+      title: 'Calculator App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 58, 81, 183)),
+          seedColor: const Color.fromARGB(255, 58, 81, 183),
+        ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: ' Calculator App'),
+      home: const MyHomePage(title: 'Calculator App'),
     );
   }
 }
@@ -41,11 +42,17 @@ class _MyHomePageState extends State<MyHomePage> {
   // Function to handle number button presses
   void _onNumberPressed(String number) {
     setState(() {
-      // If a result was just calculated or second operand is expected, reset display
-      if (_isSecondOperand || _isResultCalculated) {
+      // If a result was just calculated, reset everything and start fresh with the new number
+      if (_isResultCalculated) {
+        _display = number;
+        _firstOperand = null;
+        _secondOperand = null;
+        _operator = null;
+        _isResultCalculated = false; // Clear the result flag after input
+      } else if (_isSecondOperand) {
+        // If expecting second operand, start fresh with the second number
         _display = number;
         _isSecondOperand = false;
-        _isResultCalculated = false; // Clear result flag after input
       } else {
         _display = _display == '0' ? number : _display + number;
       }
@@ -56,8 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onOperatorPressed(String operator) {
     setState(() {
       if (_firstOperand == null || _isResultCalculated) {
-        _firstOperand = double.tryParse(_display); // Use result or first number
-        _isResultCalculated = false; // Reset flag after new operator
+        _firstOperand = double.tryParse(
+            _display); // Use the current display as the first operand
+        _isResultCalculated = false; // Reset result flag after new operator
       } else if (_operator != null && !_isSecondOperand) {
         // If already an operator, calculate with current number before storing new operator
         _secondOperand = double.tryParse(_display);
